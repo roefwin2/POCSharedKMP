@@ -1,23 +1,195 @@
-# Compiled class file
+# Kotlin Multiplatform .gitignore
+
+# =============================================================================
+# Gradle
+# =============================================================================
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+
+# =============================================================================
+# IDE
+# =============================================================================
+.idea/
+*.iml
+*.ipr
+*.iws
+.DS_Store
+.vscode/
+*.swp
+*.swo
+*~
+
+# =============================================================================
+# Kotlin
+# =============================================================================
+.kotlin/
+kotlin-js-store/
+
+# =============================================================================
+# Android
+# =============================================================================
+local.properties
+*.apk
+*.aab
+*.ap_
+*.dex
 *.class
+gen/
+out/
+release/
+captures/
+.externalNativeBuild/
+.cxx/
 
-# Log file
+# =============================================================================
+# iOS
+# =============================================================================
+iosApp/Pods/
+iosApp/.symlinks/
+iosApp/Flutter/
+iosApp/DerivedData/
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+*.xcuserstate
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+*.xccheckout
+*.xcscmblueprint
+
+# =============================================================================
+# Web / Node.js
+# =============================================================================
+# Dependencies
+webApp/node_modules/
+node_modules/
+
+# Build outputs
+webApp/dist/
+webApp/build/
+webApp/.cache/
+webApp/.parcel-cache/
+webApp/.next/
+webApp/.nuxt/
+webApp/.output/
+
+# Vite
+webApp/.vite/
+.vite/
+
+# Package manager files
+package-lock.json
+webApp/package-lock.json
+yarn.lock
+webApp/yarn.lock
+pnpm-lock.yaml
+webApp/pnpm-lock.yaml
+
+# TypeScript
+*.tsbuildinfo
+webApp/*.tsbuildinfo
+
+# =============================================================================
+# Kotlin/JS Generated Files (Gradle JS compilation)
+# =============================================================================
+# JS build distribution
+**/build/dist/
+**/build/js/
+**/build/compileSync/
+**/build/processedResources/
+
+# Kotlin JS store (yarn/npm workspaces managed by Gradle)
+kotlin-js-store/
+.kotlin-js-store/
+
+# Generated JS packages
+**/build/packages/
+**/build/tmp/
+
+# Kotlin/JS node modules managed by Gradle
+build/js/node_modules/
+
+# =============================================================================
+# Shared module builds
+# =============================================================================
+shared/build/
+composeApp/build/
+
+# =============================================================================
+# Logs
+# =============================================================================
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+.pnpm-debug.log*
 
-# BlueJ files
-*.ctxt
+# =============================================================================
+# Coverage & Testing
+# =============================================================================
+*.coverage
+.nyc_output/
+coverage/
+*.lcov
+.jest/
+jest-results/
 
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
+# =============================================================================
+# Environment
+# =============================================================================
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production
+.env.test
 
-# Package Files #
-*.jar
-*.war
-*.nar
-*.ear
-*.zip
-*.tar.gz
-*.rar
+# =============================================================================
+# Misc
+# =============================================================================
+*.tmp
+*.temp
+*.bak
+*.backup
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.Spotlight-V100
+.Trashes
+._*
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
+# =============================================================================
+# Runtime data
+# =============================================================================
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# =============================================================================
+# Optional npm cache directory
+# =============================================================================
+.npm/
+.eslintcache
+.stylelintcache
+
+# =============================================================================
+# Optional REPL history
+# =============================================================================
+.node_repl_history
+
+# =============================================================================
+# Yarn
+# =============================================================================
+.yarn/cache/
+.yarn/unplugged/
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*

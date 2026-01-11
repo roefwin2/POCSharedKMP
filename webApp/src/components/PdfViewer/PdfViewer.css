@@ -1,0 +1,107 @@
+.pdf-viewer-container {
+  text-align: center;
+  padding: 20px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.pdf-viewer-container h1 {
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.platform-info {
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.pdf-button {
+  padding: 12px 24px;
+  background-color: #007AFF;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.pdf-button:hover {
+  background-color: #0056b3;
+}
+
+.loading {
+  margin: 20px 0;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #007AFF;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 10px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-message {
+  color: #dc3545;
+  padding: 12px;
+  background-color: #f8d7da;
+  border-radius: 8px;
+  margin: 16px 0;
+}
+
+.pdf-info {
+  background-color: #d4edda;
+  padding: 16px;
+  border-radius: 8px;
+  margin: 16px 0;
+  text-align: left;
+}
+
+.pdf-info h3 {
+  color: #155724;
+  margin-top: 0;
+}
+
+.pdf-info p {
+  margin: 4px 0;
+  color: #333;
+}
+
+.no-pdf {
+  color: #666;
+  margin-top: 20px;
+}
+
+.pdf-pages {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.pdf-page {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 12px;
+}
+
+.page-label {
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.pdf-page img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid #ddd;
+}
