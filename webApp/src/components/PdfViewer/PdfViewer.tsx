@@ -1,100 +1,90 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import * as pdfjsLib from 'pdfjs-dist';
 import './PdfViewer.css';
-
-// Configure PDF.js worker for v3.x
-pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`;
-
-interface PdfMetadata {
-  title?: string;
-  author?: string;
-  pageCount: number;
-}
 
 interface PdfViewerProps {
   platformName: string;
 }
 
-export function PdfViewer({ platformName }: PdfViewerProps) {
-  const [pdfDoc, setPdfDoc] = useState<pdfjsLib.PDFDocumentProxy | null>(null);
-  const [metadata, setMetadata] = useState<PdfMetadata | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [renderedPages, setRenderedPages] = useState<string[]>([]);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+/**
+ * Opens a PDF file using the browser's native PDF viewer
+ * This is the simplest and most compatible approach
+ */
+function openPdfInNativeViewer(file: File): void {
+  const blobUrl = URL.createObjectURL(file);
+  window.open(blobUrl, '_blank');
 
-  const loadPdf = useCallback(async (file: File) => {
-    setIsLoading(true);
-    setError(null);
-    setRenderedPages([]);
-    
-    try {
-      const arrayBuffer = await file.arrayBuffer();
-      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-      
-      setPdfDoc(pdf);
-      
-      // Get metadata
-      const meta = await pdf.getMetadata();
-      setMetadata({
-        title: (meta.info as any)?.Title || undefined,
-        author: (meta.info as any)?.Author || undefined,
-        pageCount: pdf.numPages,
-      });
-      
-      // Render all pages
-      const pages: string[] = [];
-      for (let i = 1; i <= pdf.numPages; i++) {
-        const page = await pdf.getPage(i);
-        const scale = 1.5;
-        const viewport = page.getViewport({ scale });
-        
-        const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d')!;
-        canvas.height = viewport.height;
-        canvas.width = viewport.width;
-        
-        await page.render({
-          canvasContext: context,
-          viewport: viewport,
-        }).promise;
-        
-        pages.push(canvas.toDataURL());
-      }
-      
-      setRenderedPages(pages);
-    } catch (err) {
-      setError('Failed to load PDF: ' + err);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  // Cleanup blob URL after a delay to allow the new tab to load
+  setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
+}
+
+/**
+ * Opens a PDF from a URL using the browser's native PDF viewer
+ */
+function openPdfFromUrl(url: string): void {
+  window.open(url, '_blank');
+}
+
+/**
+ * Opens a PDF from base64 data using the browser's native PDF viewer
+ */
+function openPdfFromBase64(base64Data: string): void {
+  // Remove data URL prefix if present
+  const base64 = base64Data.replace(/^data:application\/pdf;base64,/, '');
+
+  // Convert base64 to blob
+  const byteCharacters = atob(base64);
+  const byteNumbers = new Array(byteCharacters.length);
+  for (let i = 0; i < byteCharacters.length; i++) {
+    byteNumbers[i] = byteCharacters.charCodeAt(i);
+  }
+  const byteArray = new Uint8Array(byteNumbers);
+  const blob = new Blob([byteArray], { type: 'application/pdf' });
+
+  const blobUrl = URL.createObjectURL(blob);
+  window.open(blobUrl, '_blank');
+
+  setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
+}
+
+export function PdfViewer({ platformName }: PdfViewerProps) {
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file && file.type === 'application/pdf') {
-      loadPdf(file);
+      setSelectedFile(file);
+      setError(null);
     } else {
       setError('Please select a valid PDF file');
+      setSelectedFile(null);
     }
   };
 
-  const handleButtonClick = () => {
+  const handleSelectFile = () => {
     fileInputRef.current?.click();
+  };
+
+  const handleOpenPdf = () => {
+    if (selectedFile) {
+      openPdfInNativeViewer(selectedFile);
+    }
   };
 
   // Cleanup
   useEffect(() => {
     return () => {
-      pdfDoc?.destroy();
+      setSelectedFile(null);
     };
-  }, [pdfDoc]);
+  }, []);
 
   return (
     <div className="pdf-viewer-container">
       <h1>PDF Reader POC</h1>
       <p className="platform-info">Platform: {platformName}</p>
-      
+      <p className="platform-info">Using native browser PDF viewer (window.open)</p>
+
       <input
         type="file"
         ref={fileInputRef}
@@ -102,47 +92,39 @@ export function PdfViewer({ platformName }: PdfViewerProps) {
         onChange={handleFileChange}
         style={{ display: 'none' }}
       />
-      
-      <button onClick={handleButtonClick} className="pdf-button">
-        Select PDF File
-      </button>
-      
-      {isLoading && (
-        <div className="loading">
-          <div className="spinner"></div>
-          <p>Loading PDF...</p>
-        </div>
-      )}
-      
+
+      <div className="button-group">
+        <button onClick={handleSelectFile} className="pdf-button">
+          Select PDF File
+        </button>
+
+        {selectedFile && (
+          <button onClick={handleOpenPdf} className="pdf-button open-button">
+            Open in Native Viewer
+          </button>
+        )}
+      </div>
+
       {error && (
         <div className="error-message">
           Error: {error}
         </div>
       )}
-      
-      {metadata && !isLoading && (
+
+      {selectedFile && (
         <div className="pdf-info">
-          <h3>PDF Loaded Successfully!</h3>
-          <p>Pages: {metadata.pageCount}</p>
-          {metadata.title && <p>Title: {metadata.title}</p>}
-          {metadata.author && <p>Author: {metadata.author}</p>}
+          <h3>File Selected</h3>
+          <p>Name: {selectedFile.name}</p>
+          <p>Size: {(selectedFile.size / 1024).toFixed(2)} KB</p>
         </div>
       )}
-      
-      {renderedPages.length > 0 && (
-        <div className="pdf-pages">
-          {renderedPages.map((pageUrl, idx) => (
-            <div key={idx} className="pdf-page">
-              <div className="page-label">Page {idx + 1}</div>
-              <img src={pageUrl} alt={'Page ' + (idx + 1)} />
-            </div>
-          ))}
-        </div>
-      )}
-      
-      {!pdfDoc && !isLoading && !error && (
-        <p className="no-pdf">No PDF loaded</p>
+
+      {!selectedFile && !error && (
+        <p className="no-pdf">No PDF selected</p>
       )}
     </div>
   );
 }
+
+// Export utility functions for use in other frameworks (Angular, Vue, etc.)
+export { openPdfInNativeViewer, openPdfFromUrl, openPdfFromBase64 };
